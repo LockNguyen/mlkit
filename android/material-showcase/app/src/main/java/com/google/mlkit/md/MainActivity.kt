@@ -34,9 +34,7 @@ class MainActivity : AppCompatActivity() {
     private enum class DetectionMode(val titleResId: Int, val subtitleResId: Int) {
         ODT_LIVE(R.string.mode_odt_live_title, R.string.mode_odt_live_subtitle),
         ODT_STATIC(R.string.mode_odt_static_title, R.string.mode_odt_static_subtitle),
-        BARCODE_LIVE(R.string.mode_barcode_live_title, R.string.mode_barcode_live_subtitle),
-        CUSTOM_MODEL_LIVE(R.string.custom_model_live_title, R.string.custom_model_live_subtitle)
-    }
+        }
 
     override fun onCreate(bundle: Bundle?) {
         super.onCreate(bundle)
@@ -101,10 +99,6 @@ class MainActivity : AppCompatActivity() {
                         DetectionMode.ODT_LIVE ->
                             activity.startActivity(Intent(activity, LiveObjectDetectionActivity::class.java))
                         DetectionMode.ODT_STATIC -> Utils.openImagePicker(activity)
-                        DetectionMode.BARCODE_LIVE ->
-                            activity.startActivity(Intent(activity, LiveBarcodeScanningActivity::class.java))
-                        DetectionMode.CUSTOM_MODEL_LIVE ->
-                            activity.startActivity(Intent(activity, CustomModelObjectDetectionActivity::class.java))
                     }
                 }
             }

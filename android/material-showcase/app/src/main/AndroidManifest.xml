@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.google.mlkit.md"
     android:installLocation="auto">
 
   <uses-feature android:name="android.hardware.camera"/>
@@ -38,19 +37,7 @@
     </activity>
 
     <activity
-        android:name="com.google.mlkit.md.LiveBarcodeScanningActivity"
-        android:exported="false"
-        android:screenOrientation="portrait">
-    </activity>
-
-    <activity
         android:name="com.google.mlkit.md.StaticObjectDetectionActivity"
-        android:exported="false"
-        android:screenOrientation="portrait">
-    </activity>
-
-    <activity
-        android:name="com.google.mlkit.md.CustomModelObjectDetectionActivity"
         android:exported="false"
         android:screenOrientation="portrait">
     </activity>

@@ -36,6 +36,7 @@ android {
     sourceSets.main {
         assets.srcDirs = ['assets']
     }
+    namespace 'com.google.mlkit.md'
 }
 
 androidExtensions {

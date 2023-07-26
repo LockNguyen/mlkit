@@ -18,12 +18,15 @@ package com.google.mlkit.md.productsearch
 
 import android.content.Context
 import android.util.Log
+import android.view.View
+import android.widget.Toast
+import com.android.volley.Request
 import com.android.volley.RequestQueue
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
 import com.google.android.gms.tasks.Tasks
 import com.google.mlkit.md.objectdetection.DetectedObjectInfo
-import java.util.ArrayList
+import org.json.JSONException
 import java.util.concurrent.Callable
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
@@ -36,7 +39,7 @@ class SearchEngine(context: Context) {
 
     fun search(
         detectedObject: DetectedObjectInfo,
-        listener: (detectedObject: DetectedObjectInfo, productList: List<Product>) -> Unit
+        listener: (detectedObject: DetectedObjectInfo, productList: List<Product>) -> Unit,
     ) {
         // Crops the object image out of the full image is expensive, so do it off the UI thread.
         Tasks.call<JsonObjectRequest>(requestCreationExecutor, Callable { createRequest(detectedObject) })
@@ -45,12 +48,44 @@ class SearchEngine(context: Context) {
                 Log.e(TAG, "Failed to create product search request!", e)
                 // Remove the below dummy code after your own product search backed hooked up.
                 val productList = ArrayList<Product>()
-                for (i in 0..7) {
-                    productList.add(
-                        Product(/* imageUrl= */"", "Product title $i", "Product subtitle $i")
-                    )
+                // Got URL from serpapi.com Google Search API Playground + my account's api_key
+                val url =
+                    "https://serpapi.com/search.json?q=$detectedObject&gl=us&google_domain=google.com&hl=en&api_key=894f7fbcc2468434f06bb956426848a7895514341674f0adbeec4cd9cf93fc2f"
+                // Hold search results
+                var title: String
+                var link: String
+
+                // Create JSONObjectRequest because Search API uses JSON object
+                val jsonObjectRequest = JsonObjectRequest(
+                    Request.Method.GET, url, null,
+                    { response ->
+                        try {
+                            // Get the successful responses
+                            val organicResultsList = response.getJSONArray("organic_results")
+
+                            // Loop through and retrieve title, link, snippet from each successful result object
+                            for (i in 0 until organicResultsList.length()) {
+                                val organicObj = organicResultsList.getJSONObject(i)
+                                if (organicObj.has("title")) {
+                                    title = organicObj.getString("title")
+                                }
+                                if (organicObj.has("link")) {
+                                    link = organicObj.getString("link")
+                                }
+
+                                // Push these results as Product objects into productList
+                                productList.add(
+                                    Product(/* imageUrl= */"", "Product title $i", "Product subtitle $i")
+                                )
+                            }
+                            // Invoke listener
+                            listener.invoke(detectedObject, productList)
+                        } catch (e: JSONException) {
+                            e.printStackTrace()
+                        }
+                    }) { // Fail:
+                    Toast.makeText(null, "No results found. Please try again.", Toast.LENGTH_SHORT).show()
                 }
-                listener.invoke(detectedObject, productList)
             }
     }
 
